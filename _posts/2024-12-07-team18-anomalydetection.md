@@ -184,7 +184,7 @@ The Area Under the Precision-Recall Curve (AUC-PR) and Area Under the Receiver O
 ## Clustering-Based Approach
 
 ### Overview
-Another approach to anomaly detection is clustering with deep learning and this is the method we chose to code run. This is talked about in the paper by [Elie Aljalbout et al.](https://arxiv.org/pdf/1801.07648) it explains how deep learning enhances the ability to group data points based on their inherent similarity. By leveraging the representational power of neural networks, this approach integrates representation learning with clustering objectives to transform raw high-dimensional data into a clustering-friendly latent space.
+Another approach to anomaly detection is clustering with deep learning and this is the method we chose to implement code for. This is talked about in the paper by [Elie Aljalbout et al.](https://arxiv.org/pdf/1801.07648) it explains how deep learning enhances the ability to group data points based on their inherent similarity. By leveraging the representational power of neural networks, this approach integrates representation learning with clustering objectives to transform raw high-dimensional data into a clustering-friendly latent space.
 
 
 ### Architecture
@@ -318,7 +318,47 @@ The clustering performance was measured using:
 
 
 ### Clustering Model Implementation
-We chose to run this clustering model on the MNIST dataset. The notebook we ran this on can be found [here](https://colab.research.google.com/drive/1Wgg7Y6YFy-9XxdxDN418OZ6AZMi9Ys5W?usp=sharing). The results from running this model can be seen below. 
+This clustering model did not have an existing code implementation. So we choose to create an implementation which follows the taxonomy and methodology outlines in the paper. The notebook we ran this on can be found [here](https://colab.research.google.com/drive/1Wgg7Y6YFy-9XxdxDN418OZ6AZMi9Ys5W?usp=sharing). 
+
+We choose to write an implementation and then use it to perform deep learning-based clustering on the MNIST dataset. Here's an overview of the steps taken:
+
+**Library Setup and Data Loading:** Necessary libraries are installed and imported. The MNIST dataset is loaded, combined (training and test sets), and preprocessed using transformations to convert images to normalized tensors.
+
+**Model Architecture:**
+
+- Convolutional Autoencoder (CAE): Defined with an encoder compressing input images into a latent space and a decoder reconstructing images from this latent representation.
+
+- Clustering Layer: Implements a clustering mechanism that computes soft cluster assignments using the Student's t-distribution based on the latent features.
+
+- Pre-training: The CAE is pre-trained using Mean Squared Error (MSE) loss to ensure that it learns meaningful feature representations by reconstructing input images accurately.
+
+**Clustering Initialization:**
+
+- K-Means Initialization: After pre-training, K-Means clustering is performed on the learned latent features to initialize cluster centers.
+- Assignment of Cluster Centers: The initialized cluster centers from K-Means are assigned to the Clustering Layer to guide the clustering process.
+
+**Fine-tuning:**
+
+- The model is fine-tuned using a combined loss of reconstruction loss and clustering loss (KL Divergence). This joint training ensures that the latent space is optimized both for accurate image reconstruction and effective clustering.
+- Target Distribution: A target distribution is computed to refine the cluster assignments, enhancing cluster compactness and separation.
+
+**Evaluation:**
+
+- Clustering Performance Metrics: The model's clustering performance is evaluated using Normalized Mutual Information (NMI) and Clustering Accuracy (ACC), showcasing its effectiveness compared to existing methods.
+
+- Visualization: t-SNE is employed to visualize the high-dimensional latent features in a 2D space, illustrating the separation and grouping of clusters relative to true labels.
+
+**Modularity and Best Practices:**
+
+- The implementation ensures modularity by separating the autoencoder and clustering components, facilitating maintenance and potential future enhancements.
+
+**Device-Agnostic Code:** 
+- The code dynamically selects between GPU and CPU, ensuring compatibility across different execution environments.
+
+**Error Handling:**  
+- Corrections were made to assign cluster centers to the appropriate layer, preventing attribute-related errors and ensuring smooth training.
+
+The final results from running this model can be seen below. 
 
 ![YOLO]({{ '/assets/images/team18/RunningCodeResult.png' | relative_url }})
 {: style="width: 800px; max-width: 100%;"}
